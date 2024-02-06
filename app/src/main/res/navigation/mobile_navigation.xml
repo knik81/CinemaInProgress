@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.example.testcinema.ui.home.home_page.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home_page" >
+        <action
+            android:id="@+id/action_navigation_home_to_filmListPageFragment"
+            app:destination="@id/filmListPageFragment" />
+        <action
+            android:id="@+id/action_navigation_home_to_filmFragment"
+            app:destination="@id/filmFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.example.testcinema.ui.profile_page.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile_page" />
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.testcinema.ui.search_page.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search_page" />
+    <fragment
+        android:id="@+id/filmListPageFragment"
+        android:name="com.example.testcinema.ui.home.list_page.ListPageFragment"
+        android:label="fragment_film_list_page"
+        tools:layout="@layout/fragment_list_page" >
+        <action
+            android:id="@+id/action_filmListPageFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
+        <action
+            android:id="@+id/action_filmListPageFragment_to_filmFragment"
+            app:destination="@id/filmFragment" />
+        <action
+            android:id="@+id/action_filmListPageFragment_to_personFragment"
+            app:destination="@id/personFragment" />
+        <action
+            android:id="@+id/action_filmListPageFragment_to_pictureFragment"
+            app:destination="@id/pictureFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/filmFragment"
+        android:name="com.example.testcinema.ui.home.film_page.FilmFragment"
+        android:label="fragment_film_page"
+        tools:layout="@layout/fragment_film_page" >
+        <action
+            android:id="@+id/action_filmFragment_to_filmListPageFragment"
+            app:destination="@id/filmListPageFragment" />
+        <action
+            android:id="@+id/action_filmFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
+        <action
+            android:id="@+id/action_filmFragment_to_filmFragment"
+            app:destination="@id/filmFragment" />
+        <action
+            android:id="@+id/action_filmFragment_to_personFragment"
+            app:destination="@id/personFragment" />
+        <action
+            android:id="@+id/action_filmFragment_to_pictureFragment"
+            app:destination="@id/pictureFragment" />
+        <action
+            android:id="@+id/action_filmFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/personFragment"
+        android:name="com.example.testcinema.ui.home.person_page.PersonFragment"
+        android:label="PersonFragment">
+        <action
+            android:id="@+id/action_personFragment_to_filmFragment"
+            app:destination="@id/filmFragment" />
+        <action
+            android:id="@+id/action_personFragment_to_filmListPageFragment"
+            app:destination="@id/filmListPageFragment" />
+        <action
+            android:id="@+id/action_personFragment_to_pictureFragment"
+            app:destination="@id/pictureFragment" />
+        <action
+            android:id="@+id/action_personFragment_to_filmographyFragment"
+            app:destination="@id/filmographyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pictureFragment"
+        android:name="com.example.testcinema.ui.home.picture_page.PictureFragment"
+        android:label="fragment_picture"
+        tools:layout="@layout/fragment_picture" >
+        <action
+            android:id="@+id/action_pictureFragment_to_filmFragment"
+            app:destination="@id/filmFragment" />
+        <action
+            android:id="@+id/action_pictureFragment_to_filmListPageFragment"
+            app:destination="@id/filmListPageFragment" />
+        <action
+            android:id="@+id/action_pictureFragment_to_personFragment"
+            app:destination="@id/personFragment" />
+        <action
+            android:id="@+id/action_pictureFragment_to_galleryFragment"
+            app:destination="@id/galleryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/galleryFragment"
+        android:name="com.example.testcinema.ui.home.gallery_page.GalleryFragment"
+        android:label="fragment_gallery"
+        tools:layout="@layout/fragment_gallery" >
+        <action
+            android:id="@+id/action_galleryFragment_to_filmFragment"
+            app:destination="@id/filmFragment" />
+        <action
+            android:id="@+id/action_galleryFragment_to_pictureFragment"
+            app:destination="@id/pictureFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/filmographyFragment"
+        android:name="com.example.testcinema.ui.home.filmography_page.FilmographyFragment"
+        android:label="FilmographyFragment" >
+        <action
+            android:id="@+id/action_filmographyFragment_to_personFragment"
+            app:destination="@id/personFragment" />
+    </fragment>
+</navigation>

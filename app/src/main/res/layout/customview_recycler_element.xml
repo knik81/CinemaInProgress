@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="115dp"
+    android:layout_height="230dp"
+    android:orientation="vertical"
+    >
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp">
+
+        <ImageView
+            android:id="@+id/imageFon"
+            android:layout_width="111dp"
+            android:layout_height="156dp"
+            android:src="@drawable/alfafon"
+            android:visibility="gone"
+            android:scaleType="centerCrop"/>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="111dp"
+            android:layout_height="156dp"
+            android:scaleType="centerCrop"/>
+
+        <ImageView
+            android:id="@+id/RatingFrame"
+            android:layout_width="28dp"
+            android:layout_height="20dp"
+            android:src="@drawable/frame_rating"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="3dp"
+            android:visibility="invisible"
+            />
+        <TextView
+            android:id="@+id/RatingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="7dp"
+            android:textColor="@color/white"
+            android:visibility="invisible"/>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/textViewRecyclerName"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:text="fdggfgfdgfgh"
+        android:layout_marginStart="5dp"
+        android:minLines="1"
+        android:maxLines="3"
+        android:textAppearance="@style/text_name_custom_home_recycler_element" />
+
+    <TextView
+        android:id="@+id/textViewRecyclerGenre"
+        android:layout_width="115dp"
+        android:layout_height="wrap_content"
+        android:text="dfggfghfghfghfghfgfdgd"
+        android:layout_marginStart="5dp"
+        android:minLines="1"
+        android:maxLines="3"
+        android:textAppearance="@style/text_genre_custom_home_recycler_element" />
+</LinearLayout>

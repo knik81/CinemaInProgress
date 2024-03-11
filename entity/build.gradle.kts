@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.entity"
+    namespace = "com.best.entity"
     compileSdk = 34
 
     defaultConfig {
@@ -17,6 +17,7 @@ android {
     }
 
     buildTypes {
+        /*
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -24,6 +25,16 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+
+        getByName("release") {
+            isShrinkResources = true
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android.txt"),
+                "proguard-rules.pro"
+            )
+        }*/
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -49,5 +60,11 @@ dependencies {
     //даггер
     implementation("com.google.dagger:dagger:2.48")
     kapt("com.google.dagger:dagger-compiler:2.48")
+
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-rxjava2:$room_version")
 
 }

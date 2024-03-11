@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="com.best.nikflix.MainActivity">
 
 
     <fragment
@@ -27,9 +27,10 @@
         android:id="@+id/arrow_back"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="10dp"
         android:clickable="true"
-        android:src="@drawable/left_arrow"
+        android:src="@drawable/arrow_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewCinema" />
 
@@ -37,7 +38,8 @@
         android:id="@+id/textViewCinema"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Cinema"
+        android:layout_marginStart="10dp"
+        android:text="NIKFLIX"
         android:textAppearance="@style/text_label_app"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

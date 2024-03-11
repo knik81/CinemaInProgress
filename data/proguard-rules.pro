@@ -18,4 +18,7 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+
+
+#помогло загрузить данные из апи
+-keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation

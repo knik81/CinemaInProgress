@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.domain"
+    namespace = "com.best.domain"
     compileSdk = 34
 
     defaultConfig {
@@ -16,6 +16,18 @@ android {
     }
 
     buildTypes {
+        /*
+        getByName("release") {
+            isShrinkResources = true
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
+         */
+        /*
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -23,6 +35,8 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+         */
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -51,4 +65,6 @@ dependencies {
 
     //пагинация
     implementation("androidx.paging:paging-runtime:3.2.1")
+
+
 }

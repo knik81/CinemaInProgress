@@ -5,29 +5,50 @@ plugins {
     id("kotlin-parcelize")
     //kotlin("android.extensions")
 
+    //fire base
+    id("com.google.gms.google-services")
+    //fire base - crashlytics
+    id("com.google.firebase.crashlytics")
+
 }
 
 android {
-    namespace = "com.example.testcinema"
+    namespace = "com.best.nikflix"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.testcinema"
-        minSdk = 33
+        applicationId = "com.best.nikflix"
+        minSdk = 27
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 5
+        versionName = "005"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        /*
         release {
             isMinifyEnabled = false
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+
+        }
+
+         */
+
+        getByName("release") {
+            isShrinkResources = false
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -81,12 +102,11 @@ dependencies {
 
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.1.1")
     implementation("androidx.compose.material:material")
     implementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
 
-    val paging_version = "3.2.1"
     implementation("androidx.paging:paging-compose:3.3.0-alpha02")
 
     //glide
@@ -112,6 +132,21 @@ dependencies {
     //пагинация
     implementation("androidx.paging:paging-runtime:3.2.1")
 
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-rxjava2:$room_version")
+
+    //fire base
+    implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
+    implementation("com.google.firebase:firebase-analytics")
+
+    //fire base - crashlytics
+    implementation("com.google.firebase:firebase-crashlytics")
+
+    ////fire base - сообщения
+    implementation("com.google.firebase:firebase-messaging")
 
 }
 

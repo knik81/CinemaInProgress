@@ -2,10 +2,12 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+    id ("kotlin-parcelize")
+   // id ("androidx.room")
 }
 
 android {
-    namespace = "com.example.data"
+    namespace = "com.best.data"
     compileSdk = 34
 
     defaultConfig {
@@ -16,6 +18,8 @@ android {
     }
 
     buildTypes {
+        /*
+    }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -23,6 +27,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+
+         */
+
+
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -60,4 +68,13 @@ dependencies {
     //даггер
     implementation("com.google.dagger:dagger:2.48")
     kapt("com.google.dagger:dagger-compiler:2.48")
+
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+    implementation("androidx.room:room-rxjava2:$room_version")
+
+
+
 }

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".ui.home.gallery_page.GalleryFragment">
+    tools:context="com.best.nikflix.ui.home.gallery_page.GalleryFragment">
 
     <TextView
         android:id="@+id/textViewLabel"

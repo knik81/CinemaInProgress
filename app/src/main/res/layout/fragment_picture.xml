@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.picture_page.PictureFragment">
+    tools:context="com.best.nikflix.ui.home.picture_page.PictureFragment">
 
     <ImageView
         android:id="@+id/imageViewPicture"

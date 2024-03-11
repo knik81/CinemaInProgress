@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation"
-    app:startDestination="@id/navigation_home">
+    app:startDestination="@id/onboardingFragment">
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.testcinema.ui.home.home_page.HomeFragment"
+        android:name="com.best.nikflix.ui.home.home_page.HomeFragment"
         android:label="Home"
         tools:layout="@layout/fragment_home_page" >
         <action
@@ -15,21 +15,15 @@
             app:destination="@id/filmListPageFragment" />
         <action
             android:id="@+id/action_navigation_home_to_filmFragment"
-            app:destination="@id/filmFragment" />
+            app:destination="@id/filmFragment"
+            app:launchSingleTop="true" />
+        <action
+            android:id="@+id/action_navigation_home_to_navigation_search"
+            app:destination="@id/navigation_search" />
     </fragment>
     <fragment
-        android:id="@+id/navigation_search"
-        android:name="com.example.testcinema.ui.profile_page.ProfileFragment"
-        android:label="Profile"
-        tools:layout="@layout/fragment_profile_page" />
-    <fragment
-        android:id="@+id/navigation_profile"
-        android:name="com.example.testcinema.ui.search_page.SearchFragment"
-        android:label="Search"
-        tools:layout="@layout/fragment_search_page" />
-    <fragment
         android:id="@+id/filmListPageFragment"
-        android:name="com.example.testcinema.ui.home.list_page.ListPageFragment"
+        android:name="com.best.nikflix.ui.home.list_page.ListPageFragment"
         android:label="fragment_film_list_page"
         tools:layout="@layout/fragment_list_page" >
         <action
@@ -40,19 +34,25 @@
             app:destination="@id/filmFragment" />
         <action
             android:id="@+id/action_filmListPageFragment_to_personFragment"
-            app:destination="@id/personFragment" />
+            app:destination="@id/personFragment"
+            />
         <action
             android:id="@+id/action_filmListPageFragment_to_pictureFragment"
             app:destination="@id/pictureFragment" />
+        <action
+            android:id="@+id/action_filmListPageFragment_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
     </fragment>
     <fragment
         android:id="@+id/filmFragment"
-        android:name="com.example.testcinema.ui.home.film_page.FilmFragment"
+        android:name="com.best.nikflix.ui.home.film_page.FilmFragment"
         android:label="fragment_film_page"
-        tools:layout="@layout/fragment_film_page" >
+        tools:layout="@layout/fragment_film_page"
+        >
         <action
             android:id="@+id/action_filmFragment_to_filmListPageFragment"
             app:destination="@id/filmListPageFragment" />
+
         <action
             android:id="@+id/action_filmFragment_to_navigation_home"
             app:destination="@id/navigation_home" />
@@ -68,10 +68,22 @@
         <action
             android:id="@+id/action_filmFragment_to_galleryFragment"
             app:destination="@id/galleryFragment" />
+        <action
+            android:id="@+id/action_filmFragment_to_filmographyFragment"
+            app:destination="@id/filmographyFragment" />
+        <action
+            android:id="@+id/action_filmFragment_to_seasonFragment"
+            app:destination="@id/seasonFragment" />
+        <action
+            android:id="@+id/action_filmFragment_to_navigation_search"
+            app:destination="@id/navigation_search" />
+        <action
+            android:id="@+id/action_filmFragment_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
     </fragment>
     <fragment
         android:id="@+id/personFragment"
-        android:name="com.example.testcinema.ui.home.person_page.PersonFragment"
+        android:name="com.best.nikflix.ui.home.person_page.PersonFragment"
         android:label="PersonFragment">
         <action
             android:id="@+id/action_personFragment_to_filmFragment"
@@ -88,7 +100,7 @@
     </fragment>
     <fragment
         android:id="@+id/pictureFragment"
-        android:name="com.example.testcinema.ui.home.picture_page.PictureFragment"
+        android:name="com.best.nikflix.ui.home.picture_page.PictureFragment"
         android:label="fragment_picture"
         tools:layout="@layout/fragment_picture" >
         <action
@@ -106,7 +118,7 @@
     </fragment>
     <fragment
         android:id="@+id/galleryFragment"
-        android:name="com.example.testcinema.ui.home.gallery_page.GalleryFragment"
+        android:name="com.best.nikflix.ui.home.gallery_page.GalleryFragment"
         android:label="fragment_gallery"
         tools:layout="@layout/fragment_gallery" >
         <action
@@ -118,10 +130,64 @@
     </fragment>
     <fragment
         android:id="@+id/filmographyFragment"
-        android:name="com.example.testcinema.ui.home.filmography_page.FilmographyFragment"
+        android:name="com.best.nikflix.ui.home.filmography_page.FilmographyFragment"
         android:label="FilmographyFragment" >
         <action
             android:id="@+id/action_filmographyFragment_to_personFragment"
             app:destination="@id/personFragment" />
+        <action
+            android:id="@+id/action_filmographyFragment_to_filmFragment"
+            app:destination="@id/filmFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/seasonFragment"
+        android:name="com.best.nikflix.ui.home.seasons_page.SeasonFragment"
+        android:label="SeasonFragment" >
+        <action
+            android:id="@+id/action_seasonFragment_to_filmFragment"
+            app:destination="@id/filmFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.best.nikflix.ui.profile.profile_page.ProfileFragment"
+        android:label="fragment_profile_page"
+        tools:layout="@layout/fragment_profile_page" >
+        <action
+            android:id="@+id/action_navigation_profile_to_filmFragment"
+            app:destination="@id/filmFragment" />
+        <action
+            android:id="@+id/action_navigation_profile_to_filmListPageFragment"
+            app:destination="@id/filmListPageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_search"
+        android:name="com.best.nikflix.ui.search.search_page.SearchFragment"
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_navigation_search_to_filmFragment"
+            app:destination="@id/filmFragment" />
+        <action
+            android:id="@+id/action_navigation_search_to_searchConfigFragment"
+            app:destination="@id/searchConfigFragment" />
+        <action
+            android:id="@+id/action_navigation_search_to_navigation_home"
+            app:destination="@id/navigation_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchConfigFragment"
+        android:name="com.best.nikflix.ui.search.search_config_page.SearchConfigFragment"
+        android:label="SearchConfigFragment" >
+        <action
+            android:id="@+id/action_searchConfigFragment_to_navigation_search"
+            app:destination="@id/navigation_search" />
+    </fragment>
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.best.nikflix.ui.onboarding.OnboardingFragment"
+        android:label="fragment_onboarding"
+        tools:layout="@layout/fragment_onboarding" >
+        <action
+            android:id="@+id/action_onboardingFragment_to_navigation_home"
+            app:destination="@id/navigation_home" />
     </fragment>
 </navigation>

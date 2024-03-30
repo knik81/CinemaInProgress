@@ -1,10 +1,11 @@
 package com.best.nikflix
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -93,46 +94,65 @@ class MainActivity : AppCompatActivity() {
             //    Log.d("Nik", "${it.result}")
         }
 
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                Log.d("Nik", "Back button pressed")
 
+
+        val contextForBack = this
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+
+            override fun handleOnBackPressed() {
+                //Log.d("Nik", "Back button pressed")
+
+                //сворачивать приложение в определенных фрагментах, иначе возврат назад
                 val label = navController.currentBackStackEntry?.destination?.label
-                if (label != "Home")
+                if (label != "Home"
+                    && label != "fragment_onboarding"
+                    && label != null
+                )
                     navController.popBackStack()
+                else {
+                    val intentForBask = Intent(Intent.ACTION_MAIN)
+                    intentForBask.addCategory(Intent.CATEGORY_HOME)
+                    intentForBask.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    ContextCompat.startActivity(
+                        contextForBack,
+                        intentForBask,
+                        null
+                    )
+                }
             }
         })
     }
 
-/*
-    private fun createNotification() {
-        val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-        else
-            PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val notification = NotificationCompat.Builder(this, App.channelId)
-            .setSmallIcon(R.mipmap.ic_launcher_round)
-            .setContentTitle("NikFlix 1")
-            .setContentText("Информирование")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-            .build()
+    /*
+        private fun createNotification() {
+            val intent = Intent(this, MainActivity::class.java)
+            val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            else
+                PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.d("Nik", "POST_NOTIFICATIONS")
-            return
+            val notification = NotificationCompat.Builder(this, App.channelId)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
+                .setContentTitle("NikFlix 1")
+                .setContentText("Информирование")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .build()
+
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.d("Nik", "POST_NOTIFICATIONS")
+                return
+            }
+            NotificationManagerCompat.from(this).notify(notificationId, notification)
         }
-        NotificationManagerCompat.from(this).notify(notificationId, notification)
-    }
 
- */
+     */
 
     companion object {
         var firstStart = true

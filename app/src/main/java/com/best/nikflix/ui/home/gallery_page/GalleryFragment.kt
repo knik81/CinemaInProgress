@@ -129,7 +129,7 @@ class GalleryFragment @Inject constructor() : Fragment() {
 
      */
 
-    fun getImageFromApi(imageType: String) {
+    private fun getImageFromApi(imageType: String) {
         lifecycleScope.launch {
             //Log.d("Nik", "launch ")
             viewModel.getPagingData(

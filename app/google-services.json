@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "615272879279",
+    "project_id": "nikflix-6eb7c",
+    "storage_bucket": "nikflix-6eb7c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:615272879279:android:0887808915af67f04cb05a",
+        "android_client_info": {
+          "package_name": "com.best.nikflix"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBljnvtawsAaXk2PX_70J3Un7bfTZ5llfI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

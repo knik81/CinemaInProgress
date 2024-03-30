@@ -47,7 +47,6 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomePageBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -112,21 +111,15 @@ class HomeFragment : Fragment() {
                     //задержка только для красоты
                     //загрузки данных из инета идет очень быстро, а задержка поможет
                     //хоть недолго картинку загрузки показать
-                    // viewModel.stateLoadStateFlow.collect { stateLoad ->
-                    //     if (stateLoad) {
                     binding.LoadingFrame.visibility = View.GONE
                     binding.LinearLayout.visibility = View.VISIBLE
                     firstStart = false
-                    //    }
-                    // }
-
                 }
             }
         }
 
         if (firstStart)
             reloadStateFlow.value = true
-        //viewLogic()
 
 
         //----------------------------------------
@@ -374,7 +367,6 @@ class HomeFragment : Fragment() {
 
             //Премьер - обращение к АПИ
             viewModel.getPremiers()
-
             //Случайный 1 и 2 - обращение к АПИ
             viewModel.getRandom(first = true)
             viewModel.getRandom(first = false)
@@ -398,7 +390,6 @@ class HomeFragment : Fragment() {
         genre: Genre? = null,
         //filters: Filters? = null
     ) {
-        //textViewCinema?.visibility = View.GONE
 
         val bundle = Bundle()
         //загрузка данных для фрагмента list_page
@@ -443,6 +434,4 @@ class HomeFragment : Fragment() {
         val bottomNavView = activity?.findViewById<View>(R.id.nav_view)
         bottomNavView?.visibility = View.VISIBLE
     }
-
-
 }

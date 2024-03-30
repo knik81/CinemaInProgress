@@ -15,7 +15,7 @@ class GalleryFragmentViewModel @Inject constructor(
 ): ViewModel(){
 
 
-    suspend fun getPagingData(
+    fun getPagingData(
         type: String,
         queryParams: QueryParams?,
         id: String?,

@@ -3,7 +3,6 @@ package com.best.nikflix.ui.home.home_page
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.best.data.entity.PremiersSimilarsApi
 import com.best.entity.ApiDataUseCaseInterface
 import com.best.entity.ApiParameters
 import com.best.entity.CollectionParameters
@@ -11,7 +10,6 @@ import com.best.entity.Country
 import com.best.entity.FilmAndCollectionF
 import com.best.entity.Filters
 import com.best.entity.Genre
-import com.best.entity.PremiersSimilarsApiInterface
 import com.best.entity.QueryParams
 import com.best.entity.ResultFromApi
 import com.best.entity.RoomUseCaseInterface
@@ -42,7 +40,6 @@ class HomeFragmentViewModel @Inject constructor(
     val stateLoadStateFlow = _stateStateFlow.asStateFlow()
 
     init {
-
         //разовое получение списка стран и жанров
         viewModelScope.launch {
             when (val resultFilters =
@@ -55,8 +52,6 @@ class HomeFragmentViewModel @Inject constructor(
                     filters = resultFilters.successData as Filters
                     //индикатор обращения к АПИ
                     getFiltersStarted = true
-
-
                 }
 
                 is ResultFromApi.Error<*> -> {
@@ -67,8 +62,6 @@ class HomeFragmentViewModel @Inject constructor(
         }
     }
 
-    //индикатор первого запуска. Чтобы не делать повторный запрос к АПИ
-    var firstStart = true
 
     // Пермьеры
     private val _premieresStateFlow = MutableStateFlow<List<RecyclerItem>?>(null)

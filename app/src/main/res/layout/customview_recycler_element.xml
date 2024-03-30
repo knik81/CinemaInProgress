@@ -67,9 +67,9 @@
         android:id="@+id/textViewRecyclerGenre"
         android:layout_width="115dp"
         android:layout_height="wrap_content"
-        android:text="dfggfghfghfghfghfgfdgd"
         android:layout_marginStart="5dp"
-        android:minLines="1"
         android:maxLines="3"
+        android:minLines="1"
+        android:text="dfggfghfghfghfghfgfdgd"
         android:textAppearance="@style/text_genre_custom_home_recycler_element" />
 </LinearLayout>

@@ -5,6 +5,5 @@ import com.best.nikflix.databinding.CustomviewRecyclerElementImageBinding
 
 class ViewHolderImage(
     val binding: CustomviewRecyclerElementImageBinding,
-): ViewHolder(binding.root) {
-}
+): ViewHolder(binding.root)
 

@@ -34,10 +34,8 @@ import com.best.nikflix.ui.home.list_page.ListPageFragment
 import com.best.nikflix.ui.home.person_page.PersonFragment
 import com.best.nikflix.ui.home.picture_page.PictureFragment
 import com.best.nikflix.ui.home.seasons_page.SeasonFragment
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 class FilmFragment : Fragment(), RefreshFilmFragmentInterface {

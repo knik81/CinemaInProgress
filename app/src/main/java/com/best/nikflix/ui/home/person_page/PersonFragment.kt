@@ -11,7 +11,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.fragment.app.Fragment
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.best.nikflix.R
 import com.best.entity.ApiParameters
@@ -57,14 +59,18 @@ class PersonFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        lifecycleScope.launch {
-            person.collect {
-                it?.films?.let { it1 ->
-                    filmographyFragmentViewModel.getFilms(
-                        itemApiUniversalList = it1,
-                        takeFilms = 10,
-                        professionKey = null
-                    )
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
+                launch {
+                    person.collect {
+                        it?.films?.let { it1 ->
+                            filmographyFragmentViewModel.getFilms(
+                                itemApiUniversalList = it1,
+                                takeFilms = 10,
+                                professionKey = null
+                            )
+                        }
+                    }
                 }
             }
 
@@ -100,16 +106,20 @@ class PersonFragment : Fragment() {
         viewModel.getPerson(idPerson ?: "", 10)
         //Log.d("Nik", idPerson.toString())
 
-        lifecycleScope.launch {
-            viewModel.errorStateFlow.collect {
-                // if (error != null)
-                //Snackbar.make(R.id., "$error", Snackbar.LENGTH_LONG).show()
-            }
-        }
-        lifecycleScope.launch {
-            filmographyFragmentViewModel.errorStateFlow.collect {
-                // if (error != null)
-                //Snackbar.make(R.id., "$error", Snackbar.LENGTH_LONG).show()
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.errorStateFlow.collect {
+                        // if (error != null)
+                        //Snackbar.make(R.id., "$error", Snackbar.LENGTH_LONG).show()
+                    }
+                }
+                launch {
+                    filmographyFragmentViewModel.errorStateFlow.collect {
+                        // if (error != null)
+                        //Snackbar.make(R.id., "$error", Snackbar.LENGTH_LONG).show()
+                    }
+                }
             }
         }
     }

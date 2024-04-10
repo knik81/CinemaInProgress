@@ -9,7 +9,9 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
@@ -73,32 +75,37 @@ class ListPageFragment @Inject constructor(
         //получение параметра по заголовку
         val apiParameter = ApiParameters.getFilmTypesByLabel(label ?: "")
 
-        //подписка на фильмы из апи или обращение в апи за фильмами из профиля
-        if (!isProfile)
-            lifecycleScope.launch {
-                val queryParams = QueryParams(
-                    genres = genre ?: Genre(),
-                    countries = country ?: Country(),
-                )
-                viewModel.getPagingData(
-                    type = apiParameter.type,
-                    queryParams = queryParams,
-                    id = idFilm
-                ).collect { itemPagingData ->
-                    adapter.submitData(itemPagingData)
-                }
-            }
-        else//фильмы из коллекций с закладки профиль
-            viewModel.getFilms(idFilList)//
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                //подписка на фильмы из апи или обращение в апи за фильмами из профиля
+                if (!isProfile)
+                    launch {
+                        val queryParams = QueryParams(
+                            genres = genre ?: Genre(),
+                            countries = country ?: Country(),
+                        )
+                        viewModel.getPagingData(
+                            type = apiParameter.type,
+                            queryParams = queryParams,
+                            id = idFilm
+                        ).collect { itemPagingData ->
+                            adapter.submitData(itemPagingData)
+                        }
+                    }
+                else//фильмы из коллекций с закладки профиль
+                    viewModel.getFilms(idFilList)//
 
-        //загрузка загрузка фильмов из профиля в адаптер
-        lifecycleScope.launch {
-            viewModel.filmListStateFlow.collect { itemApiUniversalList ->
-                //Log.d("Nik", "itemApiUniversalList  $itemApiUniversalList")
-                if (!itemApiUniversalList.isNullOrEmpty()) {
-                    binding.recyclerView.adapter = AdapterHorizontalRecycler(itemApiUniversalList) { _, id ->
-                        //нажатие на элемент списка
-                        openFilmPage(id)
+                //загрузка загрузка фильмов из профиля в адаптер
+                launch {
+                    viewModel.filmListStateFlow.collect { itemApiUniversalList ->
+                        //Log.d("Nik", "itemApiUniversalList  $itemApiUniversalList")
+                        if (!itemApiUniversalList.isNullOrEmpty()) {
+                            binding.recyclerView.adapter =
+                                AdapterHorizontalRecycler(itemApiUniversalList) { _, id ->
+                                    //нажатие на элемент списка
+                                    openFilmPage(id)
+                                }
+                        }
                     }
                 }
             }

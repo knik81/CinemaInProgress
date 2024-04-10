@@ -12,7 +12,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.best.nikflix.R
@@ -32,11 +34,14 @@ import com.best.nikflix.ui.home.list_page.ListPageFragment
 import com.best.nikflix.ui.home.person_page.PersonFragment
 import com.best.nikflix.ui.home.picture_page.PictureFragment
 import com.best.nikflix.ui.home.seasons_page.SeasonFragment
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 class FilmFragment : Fragment(), RefreshFilmFragmentInterface {
+
 
     private val viewModel: FilmFragmentViewModel by viewModels<FilmFragmentViewModel> {
         (requireContext().applicationContext as App).appComponent.filmFragmentViewModelFactoryProvide()
@@ -54,7 +59,6 @@ class FilmFragment : Fragment(), RefreshFilmFragmentInterface {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        //viewModel.filIdVM = idFilm
         binding = FragmentFilmPageBinding.inflate(inflater)
         return binding.root
     }
@@ -79,43 +83,230 @@ class FilmFragment : Fragment(), RefreshFilmFragmentInterface {
         }
 
 
-
         //Log.d("Nik", idFilm.toString())
         var webUrl = ""
         var film: FilmUi? = null
-        //подписка на данные фильма из апи
-        lifecycleScope.launch {
-            viewModel.filmStateFlow.collect { filmUi ->
-                if (filmUi != null) {
-                    film =  filmUi
-                    //Log.d("Nik", "FilmFragment, idFilm = $idFilm")
-                    binding.textViewRatingName.text = filmUi.ratingName
-                    binding.textViewYearGenre.text = filmUi.yearGenre
-                    binding.textViewCountryLength.text = filmUi.countryLength
-                    binding.imageViewPoster.load(filmUi.posterUrl)
-                    binding.textViewShortDescription.text = filmUi.shortDescription
-                    if (!isCollapsedDescription)
-                        binding.textViewDescription.text = filmUi.description
-                    else binding.textViewDescription.text = filmUi.description250
-                    webUrl = filmUi.webUrl
 
-                    //схлопывание описания фильма при нажатии на текст
-                    binding.textViewDescription.setOnClickListener {
-                        if (!isCollapsedDescription)
-                            binding.textViewDescription.text = filmUi.description
-                        else binding.textViewDescription.text = filmUi.description250
-                        isCollapsedDescription = !isCollapsedDescription
-                    }
+        //актеры
+        val actorCustomRecyclerHorizontalView = CustomHorizontalRecyclerView(requireContext())
+        binding.linearLayoutRecycler.addView(actorCustomRecyclerHorizontalView)
+        actorCustomRecyclerHorizontalView.visibility = View.GONE
 
-                    binding.imageViewPoster.setOnClickListener {
-                        openPicturePage(filmUi.posterUrl)
-                    }
+        //персонал
+        val staffCustomRecyclerHorizontalView = CustomHorizontalRecyclerView(requireContext())
+        binding.linearLayoutRecycler.addView(staffCustomRecyclerHorizontalView)
+        staffCustomRecyclerHorizontalView.visibility = View.GONE
 
-                    //Обращение в АПИ за сезонами для сериала
-                    if (filmUi.type == ApiParameters.SERIES.type) {
-                        serialName = filmUi.filmName
-                        viewModel.getSeasons(idFilm)
+
+        //картинки
+        val imagesCustomRecyclerHorizontalView = CustomHorizontalRecyclerView(requireContext())
+        binding.linearLayoutRecycler.addView(imagesCustomRecyclerHorizontalView)
+        imagesCustomRecyclerHorizontalView.visibility = View.GONE
+
+        //похожие фильмы
+        val similarsCustomRecyclerHorizontalView = CustomHorizontalRecyclerView(requireContext())
+        binding.linearLayoutRecycler.addView(similarsCustomRecyclerHorizontalView)
+        similarsCustomRecyclerHorizontalView.visibility = View.GONE
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                //подписка на данные фильма из апи
+                launch {
+                    viewModel.filmStateFlow.collect { filmUi ->
+                        if (filmUi != null) {
+                            film = filmUi
+                            //Log.d("Nik", "FilmFragment, idFilm = $idFilm")
+                            binding.textViewRatingName.text = filmUi.ratingName
+                            binding.textViewYearGenre.text = filmUi.yearGenre
+                            binding.textViewCountryLength.text = filmUi.countryLength
+                            binding.imageViewPoster.load(filmUi.posterUrl)
+                            binding.textViewShortDescription.text = filmUi.shortDescription
+                            if (!isCollapsedDescription)
+                                binding.textViewDescription.text = filmUi.description
+                            else binding.textViewDescription.text = filmUi.description250
+                            webUrl = filmUi.webUrl
+
+                            //схлопывание описания фильма при нажатии на текст
+                            binding.textViewDescription.setOnClickListener {
+                                if (!isCollapsedDescription)
+                                    binding.textViewDescription.text = filmUi.description
+                                else binding.textViewDescription.text = filmUi.description250
+                                isCollapsedDescription = !isCollapsedDescription
+                            }
+
+                            binding.imageViewPoster.setOnClickListener {
+                                openPicturePage(filmUi.posterUrl)
+                            }
+
+                            //Обращение в АПИ за сезонами для сериала
+                            if (filmUi.type == ApiParameters.SERIES.type) {
+                                serialName = filmUi.filmName
+                                viewModel.getSeasons(idFilm)
+                            }
+                        }
                     }
+                }
+                //подписка на сезоны для сериала
+                launch {
+                    viewModel.seasonTotalStateFlow.collect { season ->
+                        if (season?.total != null) {
+                            binding.linearLayoutSeries.visibility = View.VISIBLE
+                            repeat(season.total!!) { selectSeason ->
+                                val textViewSeason = TextView(context)
+                                textViewSeason.textSize = 15f
+                                textViewSeason.setPadding(0, 0, 110, 0)
+                                textViewSeason.text = "Сезон ${selectSeason + 1}"
+                                textViewSeason.setOnClickListener {
+                                    //Log.d("Nik", "${textViewSeason.text}")
+                                    openSeasonPage(season, selectSeason, serialName)
+                                }
+                                binding.LinearLayoutSeries.addView(textViewSeason)
+                            }
+                        }
+                    }
+                }
+
+                //подписка на актеров из апи
+                launch {
+                    viewModel.actorStateFlow.collect { itemList ->
+                        if (!itemList.isNullOrEmpty()) {
+                            actorCustomRecyclerHorizontalView.visibility = View.VISIBLE
+                            actorCustomRecyclerHorizontalView.setItem(
+                                recyclerItemList = itemList,
+                                name = ApiParameters.ACTOR.label,
+                                { id, _ ->
+                                    //обращение к функции открытия фрагмента с person_page для снимались
+                                    //Log.d("Nik","id 1 = $id")
+                                    openPersonPage(id.toString())
+                                },
+                                {
+                                    //обращение к функции открытия фрагмента с list_page для снимались
+                                    openListPage(ApiParameters.ACTOR.label)
+                                }
+                            )
+                        }
+                        //Log.d("Nik", "$itemList")
+                    }
+                }
+
+                //подписка на персонал из апи
+                launch {
+                    viewModel.stuffStateFlow.collect { itemList ->
+                        if (!itemList.isNullOrEmpty()) {
+                            staffCustomRecyclerHorizontalView.visibility = View.VISIBLE
+
+                            staffCustomRecyclerHorizontalView.setItem(
+                                recyclerItemList = itemList,
+                                name = ApiParameters.STAFF.label,
+                                { id, _ ->
+                                    //обращение к функции открытия фрагмента с person_page для снимались
+                                    //Log.d("Nik","id 1 = $id")
+                                    openPersonPage(id.toString())
+                                },
+                                {
+                                    //обращение к функции открытия фрагмента с list_page для персонал
+                                    openListPage(ApiParameters.STAFF.label)
+                                }
+                            )
+                        }
+                        //Log.d("Nik", "$itemList")
+                    }
+                }
+
+                //подписка на картинки из апи
+                launch {
+                    viewModel.imagesStateFlow.collect { images ->
+                        if (images != null) {
+                            if (images.itemList?.isNotEmpty() == true) {
+                                imagesCustomRecyclerHorizontalView.visibility = View.VISIBLE
+                                imagesCustomRecyclerHorizontalView.setItem(
+                                    recyclerItemList = images.itemList,
+                                    name = ApiParameters.IMAGES.label,
+                                    { _, posterUrl ->
+                                        //Log.d("Nik", "openPicturePage")
+                                        //обращение к функции открытия фрагмента  отображения картинки
+                                        openPicturePage(posterUrl)
+
+                                    },
+                                    {
+                                        //Log.d("Nik", "openGalleryPage")
+                                        //обращение к функции открытия фрагмента с gallery_page для Галерея
+                                        openGalleryPage()
+
+                                    },
+                                    recycler = images
+                                )
+                            }
+                        }
+                    }
+                }
+
+                //подписка на картинки из апи
+                launch {
+                    viewModel.similarsStateFlow.collect { similarsList ->
+                        if (!similarsList.isNullOrEmpty()) {
+                            similarsCustomRecyclerHorizontalView.visibility = View.VISIBLE
+                            similarsCustomRecyclerHorizontalView.setItem(
+                                recyclerItemList = similarsList,
+                                name = ApiParameters.SIMILARS.label,
+                                { id, _ ->
+                                    //обращение к функции открытия фрагмента с film_page для Похожие фильмы
+                                    openFilmPage(id)
+                                },
+                                {
+                                    //обращение к функции открытия фрагмента list_page для Похожие фильмы
+                                    openListPage(ApiParameters.SIMILARS.type)
+                                })
+                        }
+                    }
+                }
+
+                //подписка на вывод ошибки
+                launch {
+                    viewModel.errorStateFlow.collect { error ->
+                       /*
+                        if (error != null)
+                            Snackbar.make(binding.imageViewPoster, "$error", Snackbar.LENGTH_LONG)
+                                .show()
+
+                        */
+                    }
+                }
+
+                //подписка на иконка сердечко
+                launch {
+                    viewModelRoom.existLikeStateFlow.collect {
+                        if (it)
+                            binding.like.setImageResource(R.drawable.like_active)
+                        else
+                            binding.like.setImageResource(R.drawable.like)
+                    }
+                }
+
+                //подписка на хочу посмотреть
+                launch {
+                    viewModelRoom.existWantToSeeStateFlow.collect {
+                        if (it)
+                            binding.wanttosee.setImageResource(R.drawable.want_see_active)
+                        else
+                            binding.wanttosee.setImageResource(R.drawable.favorite)
+                    }
+                }
+
+                //подписка на видел
+                launch {
+                    viewModelRoom.existAlreadySawStateFlow.collect {
+                        if (it)
+                            binding.alreadysaw.setImageResource(R.drawable.see_active)
+                        else
+                            binding.alreadysaw.setImageResource(R.drawable.see)
+                    }
+                }
+
+
+                launch {
+
                 }
             }
         }
@@ -124,232 +315,68 @@ class FilmFragment : Fragment(), RefreshFilmFragmentInterface {
             //заглушка, чтобы не открывался постер
         }
 
-        //подписка на сезоны для сериала
-        lifecycleScope.launch {
-            viewModel.seasonTotalStateFlow.collect { season ->
-                if (season?.total != null) {
-                    binding.linearLayoutSeries.visibility = View.VISIBLE
-                    repeat(season.total!!) { selectSeason ->
-                        val textViewSeason = TextView(context)
-                        textViewSeason.textSize = 15f
-                        textViewSeason.setPadding(0, 0, 110, 0)
-                        textViewSeason.text = "Сезон ${selectSeason + 1}"
-                        textViewSeason.setOnClickListener {
-                            //Log.d("Nik", "${textViewSeason.text}")
-                            openSeasonPage(season, selectSeason, serialName)
-                        }
-                        binding.LinearLayoutSeries.addView(textViewSeason)
-                    }
-                }
-            }
+        /*
+         //обновление данных свайпом вниз
+         binding.swipeFilm.setOnRefreshListener {
+             //Log.d("Nik","swipeFilm 1")
+             viewModel.getFilm(idFilm) //данные фильма
+             viewModel.getStaff(idFilm) //Персонал
+             viewModel.getImages(idFilm) //картинки
+             viewModel.getSimilars(idFilm) //похожие фильмы
+             //firstLoad = false
+             //Log.d("Nik","swipeFilm 2")
+         }
 
-        }
+          */
 
 
-        //актеры
-        val actorCustomRecyclerHorizontalView = CustomHorizontalRecyclerView(requireContext())
-        binding.linearLayoutRecycler.addView(actorCustomRecyclerHorizontalView)
-        actorCustomRecyclerHorizontalView.visibility = View.GONE
-
-        //подписка на актеров из апи
-        lifecycleScope.launch {
-            viewModel.actorStateFlow.collect { itemList ->
-                if (!itemList.isNullOrEmpty()) {
-                    actorCustomRecyclerHorizontalView.visibility = View.VISIBLE
-                    actorCustomRecyclerHorizontalView.setItem(
-                        recyclerItemList = itemList,
-                        name = ApiParameters.ACTOR.label,
-                        { id, _ ->
-                            //обращение к функции открытия фрагмента с person_page для снимались
-                            //Log.d("Nik","id 1 = $id")
-                            openPersonPage(id.toString())
-                        },
-                        {
-                            //обращение к функции открытия фрагмента с list_page для снимались
-                            openListPage(ApiParameters.ACTOR.label)
-                        }
-                    )
-                }
-                //Log.d("Nik", "$itemList")
-            }
-        }
-
-        //персонал
-        val staffCustomRecyclerHorizontalView = CustomHorizontalRecyclerView(requireContext())
-        binding.linearLayoutRecycler.addView(staffCustomRecyclerHorizontalView)
-        staffCustomRecyclerHorizontalView.visibility = View.GONE
-
-        //подписка на персонал из апи
-        lifecycleScope.launch {
-            viewModel.stuffStateFlow.collect { itemList ->
-                if (!itemList.isNullOrEmpty()) {
-                    staffCustomRecyclerHorizontalView.visibility = View.VISIBLE
-
-                    staffCustomRecyclerHorizontalView.setItem(
-                        recyclerItemList = itemList,
-                        name = ApiParameters.STAFF.label,
-                        { id, _ ->
-                            //обращение к функции открытия фрагмента с person_page для снимались
-                            //Log.d("Nik","id 1 = $id")
-                            openPersonPage(id.toString())
-                        },
-                        {
-                            //обращение к функции открытия фрагмента с list_page для персонал
-                            openListPage(ApiParameters.STAFF.label)
-                        }
-                    )
-                }
-                //Log.d("Nik", "$itemList")
-            }
-        }
-
-        //картинки
-        val imagesCustomRecyclerHorizontalView = CustomHorizontalRecyclerView(requireContext())
-        binding.linearLayoutRecycler.addView(imagesCustomRecyclerHorizontalView)
-        imagesCustomRecyclerHorizontalView.visibility = View.GONE
-
-        //подписка на картинки из апи
-        lifecycleScope.launch {
-            viewModel.imagesStateFlow.collect { images ->
-                if (images != null) {
-                    if (images.itemList?.isNotEmpty() == true) {
-                        imagesCustomRecyclerHorizontalView.visibility = View.VISIBLE
-                        imagesCustomRecyclerHorizontalView.setItem(
-                            recyclerItemList = images.itemList,
-                            name = ApiParameters.IMAGES.label,
-                            { _, posterUrl ->
-                                //Log.d("Nik", "openPicturePage")
-                                //обращение к функции открытия фрагмента  отображения картинки
-                                openPicturePage(posterUrl)
-
-                            },
-                            {
-                                //Log.d("Nik", "openGalleryPage")
-                                //обращение к функции открытия фрагмента с gallery_page для Галерея
-                                openGalleryPage()
-
-                            },
-                            recycler = images
+        //нажатие на сердечко
+        binding.like.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    launch(Dispatchers.IO) {
+                        viewModelRoom.switch(
+                            FilmAndCollectionF(
+                                filmId = idFilm.toString(),
+                                collection = CollectionParameters.LIKE.label
+                            )
                         )
                     }
                 }
             }
         }
 
-
-        //похожие фильмы
-        val similarsCustomRecyclerHorizontalView = CustomHorizontalRecyclerView(requireContext())
-        binding.linearLayoutRecycler.addView(similarsCustomRecyclerHorizontalView)
-        similarsCustomRecyclerHorizontalView.visibility = View.GONE
-
-        //подписка на картинки из апи
-        lifecycleScope.launch {
-            viewModel.similarsStateFlow.collect { similarsList ->
-                if (!similarsList.isNullOrEmpty()) {
-                    similarsCustomRecyclerHorizontalView.visibility = View.VISIBLE
-                    similarsCustomRecyclerHorizontalView.setItem(
-                        recyclerItemList = similarsList,
-                        name = ApiParameters.SIMILARS.label,
-                        { id, _ ->
-                            //обращение к функции открытия фрагмента с film_page для Похожие фильмы
-                            openFilmPage(id)
-                        },
-                        {
-                            //обращение к функции открытия фрагмента list_page для Похожие фильмы
-                            openListPage(ApiParameters.SIMILARS.type)
-                        })
+        //нажатие на хочу посмотреть
+        binding.wanttosee.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    launch(Dispatchers.IO) {
+                        launch(Dispatchers.IO) {
+                            viewModelRoom.switch(
+                                FilmAndCollectionF(
+                                    filmId = idFilm.toString(),
+                                    collection = CollectionParameters.WANTTOSEE.label
+                                )
+                            )
+                        }
+                    }
                 }
             }
         }
 
-
-        //подписка на вывод ошибки
-        lifecycleScope.launch {
-            viewModel.errorStateFlow.collect { error ->
-               // if (error != null)
-                 //   Snackbar.make(binding.imageViewPoster, "$error", Snackbar.LENGTH_LONG).show()
-            }
-        }
-
-        /*
-        //обновление данных свайпом вниз
-        binding.swipeFilm.setOnRefreshListener {
-            //Log.d("Nik","swipeFilm 1")
-            viewModel.getFilm(idFilm) //данные фильма
-            viewModel.getStaff(idFilm) //Персонал
-            viewModel.getImages(idFilm) //картинки
-            viewModel.getSimilars(idFilm) //похожие фильмы
-            //firstLoad = false
-            //Log.d("Nik","swipeFilm 2")
-        }
-
-         */
-
-
-        //нажатие на сердечко
-        binding.like.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                viewModelRoom.switch(
-                    FilmAndCollectionF(
-                        filmId = idFilm.toString(),
-                        collection = CollectionParameters.LIKE.label
-                    )
-                )
-            }
-        }
-
-        //нажатие на хочу посмотреть
-        binding.wanttosee.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                viewModelRoom.switch(
-                    FilmAndCollectionF(
-                        filmId = idFilm.toString(),
-                        collection = CollectionParameters.WANTTOSEE.label
-                    )
-                )
-            }
-        }
-
-
         //нажатие на уже видел
         binding.alreadysaw.setOnClickListener {
-            lifecycleScope.launch(Dispatchers.IO) {
-                viewModelRoom.switch(
-                    FilmAndCollectionF(
-                        filmId = idFilm.toString(),
-                        collection = CollectionParameters.ALREADYSAW.label
-                    )
-                )
-            }
-        }
-        //подписка на иконка сердечко
-        lifecycleScope.launch {
-            viewModelRoom.existLikeStateFlow.collect {
-                if (it)
-                    binding.like.setImageResource(R.drawable.like_active)
-                else
-                    binding.like.setImageResource(R.drawable.like)
-            }
-        }
-
-
-//
-        //подписка на хочу посмотреть
-        lifecycleScope.launch {
-            viewModelRoom.existWantToSeeStateFlow.collect {
-                if (it)
-                    binding.wanttosee.setImageResource(R.drawable.want_see_active)
-                else
-                    binding.wanttosee.setImageResource(R.drawable.favorite)
-            }
-        }
-        //подписка на видел
-        lifecycleScope.launch {
-            viewModelRoom.existAlreadySawStateFlow.collect {
-                if (it)
-                    binding.alreadysaw.setImageResource(R.drawable.see_active)
-                else
-                    binding.alreadysaw.setImageResource(R.drawable.see)
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                    launch(Dispatchers.IO) {
+                        viewModelRoom.switch(
+                            FilmAndCollectionF(
+                                filmId = idFilm.toString(),
+                                collection = CollectionParameters.ALREADYSAW.label
+                            )
+                        )
+                    }
+                }
             }
         }
 
@@ -372,15 +399,10 @@ class FilmFragment : Fragment(), RefreshFilmFragmentInterface {
         binding.dots3.setOnClickListener {
 
             val filmPageBottomSheetDialogFragment = BottomSheetDialogFilmFragment()
-           filmPageBottomSheetDialogFragment.show(
+            filmPageBottomSheetDialogFragment.show(
                 requireActivity().supportFragmentManager, "sdf"
             )
-  /*           //запуск фрагмента
-            findNavController().navigate(
-                R.id.action_navigation_profile_to_filmListPageFragment
-            )
 
- */
 
             //передача инстанции
             //нужно для обновления кнопок.

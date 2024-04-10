@@ -10,7 +10,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.best.nikflix.R
 import com.best.entity.FilmAndCollectionF
@@ -38,37 +40,39 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-
-        //подписка на с специальный список из БД
-        //и обращение в апи с этим списком
-        lifecycleScope.launch {
-            viewModelRoom.specialListStateflow.collect { filmAndCollection ->
-                //Log.d("Nik", "filmAndCollection $filmAndCollection")
-                if (!filmAndCollection.isNullOrEmpty())
-                    viewModel.getFilms(filmAndCollection)
-            }
-        }
-
-        //запуск загрузки из БД
-        lifecycleScope.launch {
-            viewModelRoom.test().collect {
-                viewModelRoom.getAllFilmAndCollectionF()
-                //Log.d("Nik", "it $it")
-            }
-        }
-
         //список всех фильмов и коллекций из БД
         val filmAndCollectionListStateFlow = mutableListOf<FilmAndCollectionF>()
-        lifecycleScope.launch {
-            viewModelRoom.filmAndCollectionListStateFlow.collect {
 
-                filmAndCollectionListStateFlow.clear()
-               // Log.d("Nik", "filmAndCollectionListStateFlow  $filmAndCollectionListStateFlow")
-               // Log.d("Nik", "it  $it")
-                if (!it.isNullOrEmpty())
-                    filmAndCollectionListStateFlow.addAll(it)
+        //viewModelRoom.getAllFilmAndCollectionF()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                //подписка на специальный список из БД
+                //и обращение в апи с этим списком
+                launch {
+                    viewModelRoom.specialListStateflow.collect { filmAndCollection ->
+                        //Log.d("Nik", "filmAndCollection $filmAndCollection")
+                        if (!filmAndCollection.isNullOrEmpty())
+                            viewModel.getFilms(filmAndCollection)
+                    }
+                }
+
+                //список всех фильмов и коллекций из БД
+                launch {
+                    viewModelRoom.filmAndCollectionListStateFlow.collect {
+                        filmAndCollectionListStateFlow.clear()
+                        // Log.d("Nik", "filmAndCollectionListStateFlow  $filmAndCollectionListStateFlow")
+                        // Log.d("Nik", "it  $it")
+                        if (!it.isNullOrEmpty())
+                            filmAndCollectionListStateFlow.addAll(it)
+                    }
+                }
             }
         }
+
+
+
 
         val view = ComposeView(requireContext())
         view.setContent {

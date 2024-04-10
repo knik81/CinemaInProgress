@@ -15,6 +15,9 @@ import javax.inject.Inject
 class RoomViewModel @Inject constructor(
     private val roomUseCase: RoomUseCaseInterface
 ) : ViewModel() {
+    init {
+        getAllFilmAndCollectionF()
+    }
 
     private val _filmAndCollectionMapSateFlow = MutableStateFlow<Map<String, Int>?>(null)
     val filmAndCollectionMapSateFlow = _filmAndCollectionMapSateFlow.asStateFlow()
@@ -25,7 +28,7 @@ class RoomViewModel @Inject constructor(
     private val _specialListStateflow = MutableStateFlow<List<FilmAndCollectionF>?>(null)
     val specialListStateflow = _specialListStateflow.asStateFlow()
 
-    fun test() = roomUseCase.getAllFilmAndCollectionF()
+    //fun test() = roomUseCase.getAllFilmAndCollectionF()
 
     //загрузить все фильмы и коллекции из БД
     fun getAllFilmAndCollectionF() {
@@ -40,11 +43,13 @@ class RoomViewModel @Inject constructor(
                     filmAndCollectionList1.addAll(filmAndCollectionList)
                     filmAndCollectionListStateFlow.value = filmAndCollectionList
 
-                    filmAndCollectionList.forEach { filmAndCollection ->
+                    filmAndCollectionList.forEachIndexed { index, filmAndCollection ->
+
                         //рассчитать количество каждой коллекции для квадратных иконов
                         val qty: Int = filmAndCollectionMap[filmAndCollection.collection] ?: 0
                         val increment: Int =
                             if (filmAndCollection.filmId != "" && filmAndCollection.filmId != "0") 1 else 0
+
                         filmAndCollectionMap[filmAndCollection.collection] = qty + increment
 
                         //заполнить список с коллекцией Уже видел и  Интересно
@@ -52,7 +57,13 @@ class RoomViewModel @Inject constructor(
                             || filmAndCollection.collection == CollectionParameters.INTERESTING.label
                         )
                             specialListStateflow.add(filmAndCollection)
+
+                        //визуально уменьшает задержку
+                        //пользователь видит пости сразу не дожидаясь прогрузке всех фидбмов
+                        if (index == 8)
+                            _specialListStateflow.value = specialListStateflow.distinct()
                     }
+
                 }
                 //Log.d("Nik", "dfs $dfs")
                 _filmAndCollectionMapSateFlow.value = filmAndCollectionMap

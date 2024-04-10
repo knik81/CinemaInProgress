@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
@@ -63,7 +65,7 @@ class GalleryFragment @Inject constructor() : Fragment() {
 
             val drawable = ChipDrawable.createFromAttributes(
                 requireContext(),
-                 null,
+                null,
                 0,
                 R.style.ChipCustomStyle
             )
@@ -113,33 +115,21 @@ class GalleryFragment @Inject constructor() : Fragment() {
     }
 
     //подписка на фото из апи
-    /*
     private fun getImageFromApi(imageType: String) {
-        lifecycleScope.launch {
-            //Log.d("Nik", "getImageFromApi launch ")
-            viewModel.getPagingData(
-                type = ApiParameters.IMAGES.type,
-                filters = null,
-                id = idFilm,
-                imageType = imageType
-            ).collect { itemPagingData ->
-            }
-        }
-    }
-
-     */
-
-    private fun getImageFromApi(imageType: String) {
-        lifecycleScope.launch {
-            //Log.d("Nik", "launch ")
-            viewModel.getPagingData(
-                type = ApiParameters.IMAGES.type,
-                queryParams = null,
-                id = idFilm,
-                imageType = imageType
-            ).collect { itemPagingData ->
-                adapter.submitData(itemPagingData)
-                //Log.d("Nik", itemPagingData.toString())
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    //Log.d("Nik", "launch ")
+                    viewModel.getPagingData(
+                        type = ApiParameters.IMAGES.type,
+                        queryParams = null,
+                        id = idFilm,
+                        imageType = imageType
+                    ).collect { itemPagingData ->
+                        adapter.submitData(itemPagingData)
+                        //Log.d("Nik", itemPagingData.toString())
+                    }
+                }
             }
         }
     }

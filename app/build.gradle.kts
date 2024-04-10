@@ -20,8 +20,8 @@ android {
         applicationId = "com.best.nikflix"
         minSdk = 27
         targetSdk = 34
-        versionCode = 9
-        versionName = "009"
+        versionCode = 11
+        versionName = "011"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

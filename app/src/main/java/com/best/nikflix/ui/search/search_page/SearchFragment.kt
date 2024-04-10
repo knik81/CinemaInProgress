@@ -33,7 +33,7 @@ class SearchFragment : Fragment() {
         //viewModel.getSearchText()
         //Log.d("Nik","setContent")
         viewModel.getAlreadySaw()
-
+        
         view.setContent {
             //val searchText = viewModel.textListStateFlow.collectAsState().value
             val flowData by viewModel.getSearchTextFlow().collectAsState(initial = null)

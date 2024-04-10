@@ -21,7 +21,6 @@ class FilmFragmentViewModel @Inject constructor(
     private val apiDataUseCase: ApiDataUseCaseInterface,
 ) : ViewModel() {
 
-    //var filIdVM = 0
 
     //переменная для загрузки данных с описанием фильма
     private val _filmStateFlow = MutableStateFlow<FilmUi?>(null)
